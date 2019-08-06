@@ -18,6 +18,7 @@ makedepends="
 	linux-headers
 	postgresql-dev
 	python2-dev
+	python3-dev
 	sqlite-dev
 	swig
 	tiff-dev
@@ -26,7 +27,8 @@ makedepends="
 	"
 subpackages="
 	$pkgname-dev
-	py-$pkgname:py
+	py-$pkgname:py2
+	py3-$pkgname:py3
 	"
 
 source="http://download.osgeo.org/$pkgname/$pkgver/$pkgname-$pkgver.tar.xz"
@@ -38,6 +40,7 @@ build() {
 
 	cd swig/python
 	python2 setup.py build
+	python3 setup.py build
 }
 
 package() {
@@ -45,11 +48,22 @@ package() {
 	chmod -x "$pkgdir"/usr/include/*.h
 }
 
-py() {
-	pkgdesc="$pkgname (python bindings)"
+py2() {
+	pkgdesc="$pkgname (python 2 bindings)"
 
 	cd "$builddir"/swig/python
 	python2 setup.py install --prefix=/usr --root="$subpkgdir"
+
+	chmod a+x scripts/*
+	install -d "$subpkgdir"/usr/bin
+	install -m755 scripts/*.py "$subpkgdir"/usr/bin/
+}
+
+py3() {
+	pkgdesc="$pkgname (python 3 bindings)"
+
+	cd "$builddir"/swig/python
+	python3 setup.py install --prefix=/usr --root="$subpkgdir"
 
 	chmod a+x scripts/*
 	install -d "$subpkgdir"/usr/bin
